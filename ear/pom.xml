@@ -1,0 +1,72 @@
+<?xml version="1.0"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <artifactId>wildfly-ejb-in-ear</artifactId>
+        <groupId>org.wildfly.quickstarts</groupId>
+        <version>9.0.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>wildfly-ejb-in-ear-ear</artifactId>
+    <name>WildFly Quickstarts: EJB and War in an Ear - EAR</name>
+    <packaging>ear</packaging>
+
+   
+
+    <dependencies>
+        <!-- Dependencies on the ejb and web modules so that they can be found by the ear plugin -->
+        <dependency>
+            <groupId>org.wildfly.quickstarts</groupId>
+            <artifactId>wildfly-ejb-in-ear-web</artifactId>
+            <type>war</type>
+        </dependency>
+        <dependency>
+            <groupId>org.wildfly.quickstarts</groupId>
+            <artifactId>wildfly-ejb-in-ear-ejb</artifactId>
+            <type>ejb</type>
+        </dependency>
+    </dependencies>
+
+    <build>
+      <finalName>${project.artifactId}</finalName>
+        <plugins>
+            <!-- Ear plugin -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-ear-plugin</artifactId>
+                <version>${version.ear.plugin}</version>
+                <!-- configuring the ear plugin -->
+                <configuration>
+                    <!-- Tell Maven we are using Java EE 7 -->
+                    <version>6</version>
+                  
+                    <defaultLibBundleDir>lib</defaultLibBundleDir>
+                    <modules>
+                    
+                        <webModule>
+                            <groupId>org.wildfly.quickstarts</groupId>
+                            <artifactId>wildfly-ejb-in-ear-web</artifactId>
+                            <contextRoot>/wildfly-ejb-in-ear</contextRoot>
+                        </webModule>
+                    </modules>
+                    <fileNameMapping>no-version</fileNameMapping>
+                </configuration>
+            </plugin>
+            
+            <!-- WildFly plugin to deploy ear -->
+            <plugin>
+                <groupId>org.wildfly.plugins</groupId>
+                <artifactId>wildfly-maven-plugin</artifactId>
+                <version>${version.wildfly.maven.plugin}</version>
+                <configuration>
+                    <filename>${project.artifactId}.ear</filename>
+                    <skip>false</skip>
+                </configuration>
+            </plugin>
+            
+        </plugins>
+    </build>
+</project>

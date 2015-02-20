@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence version="2.1" xmlns="http://xmlns.jcp.org/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd">
+    <persistence-unit name="MysqlPU" transaction-type="JTA">
+    <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+    <jta-data-source>java:/MediaDS</jta-data-source>
+    <class>se.nrm.bio.mediaserver.domain.Media</class>
+    <class>se.nrm.bio.mediaserver.domain.Image</class>
+    <class>se.nrm.bio.mediaserver.domain.Video</class>
+    <class>se.nrm.bio.mediaserver.domain.Sound</class>
+    <class>se.nrm.bio.mediaserver.domain.Attachment</class>
+    
+    <class>se.nrm.bio.mediaserver.domain.AdminConfig</class>
+    <class>se.nrm.bio.mediaserver.domain.AdminMedia</class>
+    
+    <class>se.nrm.bio.mediaserver.domain.Tag</class>
+    <class>se.nrm.bio.mediaserver.domain.Determination</class>
+    <class>se.nrm.bio.mediaserver.domain.Tag</class>
+    <class>se.nrm.bio.mediaserver.domain.Lic</class>
+    
+    
+    <class>se.nrm.bio.mediaserver.domain.dummy.Dummy</class>
+    <class>se.nrm.bio.mediaserver.domain.dummy.Car</class>
+    <class>se.nrm.bio.mediaserver.domain.dummy.Vehicle</class>
+  </persistence-unit>
+    
+    <!--    <persistence-unit name="TEST_PU" transaction-type="RESOURCE_LOCAL">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <class>se.nrm.bio.mediaserver.domain.Vehicle</class>
+        <class>se.nrm.bio.mediaserver.domain.Car</class>
+        <class>se.nrm.bio.mediaserver.domain.Dummy</class>
+        <class>se.nrm.bio.mediaserver.domain.Media</class>
+        <class>se.nrm.bio.mediaserver.domain.Image</class>
+        <class>se.nrm.bio.mediaserver.domain.Tag</class>
+        <class>se.nrm.bio.mediaserver.domain.Determination</class>
+        <class>se.nrm.bio.mediaserver.domain.Tag</class>
+        <class>se.nrm.bio.mediaserver.domain.Lic</class>
+        <properties>
+            <property name="javax.persistence.jdbc.url" value="jdbc:mysql://localhost:3306/nrm_media"/>
+            <property name="javax.persistence.jdbc.user" value="root"/>
+            <property name="javax.persistence.jdbc.password" value="ingimar"/>
+            <property name="javax.persistence.jdbc.driver" value="com.mysql.jdbc.Driver"/>
+        </properties>
+    </persistence-unit>-->
+</persistence>
