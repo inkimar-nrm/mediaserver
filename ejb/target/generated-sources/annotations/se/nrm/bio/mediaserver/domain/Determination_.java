@@ -5,7 +5,7 @@ import javax.persistence.metamodel.SingularAttribute;
 import javax.persistence.metamodel.StaticMetamodel;
 import se.nrm.bio.mediaserver.domain.Media;
 
-@Generated(value="EclipseLink-2.5.2.v20140319-rNA", date="2015-02-20T23:02:14")
+@Generated(value="EclipseLink-2.5.2.v20140319-rNA", date="2015-02-21T01:12:00")
 @StaticMetamodel(Determination.class)
 public class Determination_ { 
 

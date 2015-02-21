@@ -9,7 +9,7 @@ import se.nrm.bio.mediaserver.domain.Determination;
 import se.nrm.bio.mediaserver.domain.Lic;
 import se.nrm.bio.mediaserver.domain.Tag;
 
-@Generated(value="EclipseLink-2.5.2.v20140319-rNA", date="2015-02-20T23:02:14")
+@Generated(value="EclipseLink-2.5.2.v20140319-rNA", date="2015-02-21T01:12:00")
 @StaticMetamodel(Media.class)
 public abstract class Media_ { 
 

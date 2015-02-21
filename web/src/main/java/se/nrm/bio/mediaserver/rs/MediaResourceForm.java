@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import javax.ejb.EJB;
-import javax.inject.Inject;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -25,7 +24,6 @@ import se.nrm.bio.mediaserver.business.StartupBean;
 import se.nrm.bio.mediaserver.domain.Lic;
 import se.nrm.bio.mediaserver.domain.Media;
 import se.nrm.bio.mediaserver.domain.MediaText;
-import se.nrm.bio.mediaserver.util.AdminProperties;
 import se.nrm.mediaserver.resteasy.util.AggregateTags;
 import se.nrm.mediaserver.resteasy.util.CheckSumFactory;
 import se.nrm.mediaserver.resteasy.util.ExifExtraction;
@@ -50,8 +48,10 @@ public class MediaResourceForm {
     @EJB
     private MediaserviceBean bean;
     
-    @Inject
-    private StartupBean environment;
+    @EJB 
+    private StartupBean envBean;
+    ConcurrentHashMap envMap = null;
+    
 
     private int dynamic_status = Response.Status.OK.getStatusCode();
 
@@ -67,7 +67,7 @@ public class MediaResourceForm {
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.TEXT_PLAIN)
     public Response createNewFile(@MultipartForm FileUploadForm form) throws IOException {
-        ConcurrentHashMap get = environment.getEnvironment();
+        envMap = envBean.getEnvironment();
         String mimeType = "unknown", hashChecksum = "unknown";
         final String NOT_APPLICABLE = "N/A";
 
@@ -101,8 +101,8 @@ public class MediaResourceForm {
             case "image/gif": {
                 boolean exportImage = form.isExport();
                 String exifJSON = NOT_APPLICABLE;
-                boolean isExif = AdminProperties.getIsExif();
-                if (isExif) {
+                String basePath = (String)envMap.get("is_exif");
+                if (Boolean.parseBoolean(basePath)) {
                     try {
                         exifJSON = extractExif(uploadedFileLocation, exifJSON);
                     } catch (ImageProcessingException ex) {
@@ -279,14 +279,14 @@ public class MediaResourceForm {
         return uuIdFilename;
     }
 
+    // "path_to_files"
     private String getAbsolutePathToFile(String uuid) {
-        String basePath = AdminProperties.getImagesFilePath();
+        String basePath = (String)envMap.get("path_to_files");
         return PathHelper.getEmptyOrAbsolutePathToFile(uuid, basePath);
     }
 
+//        boolean isSuffix = AdminProperties.getIsSuffix();
     private void writeToFile(FileUploadForm form, String location) {
-        //@TODO
-        boolean isSuffix = AdminProperties.getIsSuffix();
         Writeable writer = new FileSystemWriter();
         writer.writeBytesTo(form.getFileData(), location);
     }
