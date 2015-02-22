@@ -35,4 +35,10 @@ public class AdminBean {
         List<Lic> resultList = query.getResultList();
         return resultList;
     }
+    public Lic getLicense(String abbrev){
+        Query query = em.createNamedQuery(Lic.FIND_BY_ABBREV);
+        query.setParameter("abbrev", abbrev);
+        Lic license = (Lic) query.getSingleResult();
+        return license;
+    }
 }

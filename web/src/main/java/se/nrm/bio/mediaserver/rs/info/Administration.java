@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package se.nrm.bio.mediaserver.rs.info;
 
 import java.util.List;
@@ -28,13 +23,19 @@ public class Administration {
 
     @EJB
     AdminBean bean;
-    
 
     @GET
     @Path("/licenses")
     public List<Lic> getLicenses() {
         List<Lic> mediaList = bean.getLicenses();
         return mediaList;
+    }
+
+    @GET
+    @Path("/licenses/{abbrev}")
+    public Lic getLicenseByAbbrevation(@PathParam("abbrev") String abbrev) {
+        Lic license = bean.getLicense(abbrev);
+        return license;
     }
 
     @GET
