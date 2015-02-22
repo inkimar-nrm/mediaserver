@@ -142,7 +142,8 @@ public class MediaResourceForm {
         hashChecksum = CheckSumFactory.createMD5ChecksumFromBytestream(fileData);
 
         MediaURL url = new MediaURL();
-        String pathToMedia = url.getPathToStream();
+//        String pathToMedia = url.getPathToStream();
+        String pathToMedia = (String)envMap.get("relative_stream_url");
 
         media.setUuid(fileUUID);
         media.setOwner(form.getOwner());

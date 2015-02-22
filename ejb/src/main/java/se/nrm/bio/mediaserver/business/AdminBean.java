@@ -11,6 +11,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import se.nrm.bio.mediaserver.domain.AdminConfig;
+import se.nrm.bio.mediaserver.domain.Lic;
 
 /**
  *
@@ -27,5 +28,11 @@ public class AdminBean {
         query.setParameter("environment", env);
         List<AdminConfig> configs = query.getResultList();
         return configs;
+    }
+    
+    public List<Lic> getLicenses(){
+        Query query = em.createNamedQuery(Lic.FIND_ALL);
+        List<Lic> resultList = query.getResultList();
+        return resultList;
     }
 }
