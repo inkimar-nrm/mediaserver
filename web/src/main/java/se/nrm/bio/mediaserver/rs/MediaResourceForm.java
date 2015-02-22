@@ -280,13 +280,11 @@ public class MediaResourceForm {
         return uuIdFilename;
     }
 
-    // "path_to_files"
     private String getAbsolutePathToFile(String uuid) {
         String basePath = (String)envMap.get("path_to_files");
         return PathHelper.getEmptyOrAbsolutePathToFile(uuid, basePath);
     }
 
-//        boolean isSuffix = AdminProperties.getIsSuffix();
     private void writeToFile(FileUploadForm form, String location) {
         Writeable writer = new FileSystemWriter();
         writer.writeBytesTo(form.getFileData(), location);

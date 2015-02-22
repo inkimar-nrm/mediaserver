@@ -6,11 +6,14 @@
 package se.nrm.bio.mediaserver.rs.demo;
 
 import java.io.IOException;
+import java.util.concurrent.ConcurrentHashMap;
+import javax.ejb.EJB;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import se.nrm.bio.mediaserver.business.StartupBean;
 
 /**
  *
@@ -19,6 +22,10 @@ import javax.servlet.http.HttpServletResponse;
 @WebServlet(urlPatterns = {"/Demo"})
 public class Demo extends HttpServlet {
 
+    @EJB
+    private StartupBean envBean;
+
+    ConcurrentHashMap envMap = null;
     /**
      *
      * @param request servlet request
@@ -31,7 +38,13 @@ public class Demo extends HttpServlet {
         response.setContentType("text/html;charset=UTF-8");
         
         String uuid = (String)request.getParameter("uuid");
-        String url = "/wildfly-ejb-in-ear/rest/stream/".concat(uuid);
+        
+        envMap = envBean.getEnvironment();
+        String basePath = (String) envMap.get("base_url");
+        String rel_stream = (String) envMap.get("relative_stream_url");
+        
+//        String url = "/wildfly-ejb-in-ear/rest/stream/".concat(uuid);
+        String url = basePath.concat(rel_stream).concat(uuid);
         response.sendRedirect(url);
         
     }

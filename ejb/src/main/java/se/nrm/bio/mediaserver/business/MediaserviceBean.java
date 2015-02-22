@@ -71,6 +71,23 @@ public class MediaserviceBean<T> implements Serializable {
         List<Image> images = query.getResultList();
         return images;
     }
+    
+    public List<Image> getAll() {
+        Query query = em.createNamedQuery(Media.FIND_ALL);
+        List<Image> images = query.getResultList();
+        return images;
+    }
+
+    public List getXImages(String in, int limit) {
+
+        Query query = em.createNamedQuery(in);
+        List<Media> images = query.setMaxResults(limit).getResultList();
+        return images;
+    }
+    
+    
+    
+    
 
     public T getVechicle(String uuid) {
         Query namedQuery = em.createNamedQuery("Vehicle.findByUuid");

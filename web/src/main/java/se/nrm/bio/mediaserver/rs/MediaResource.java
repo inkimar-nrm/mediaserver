@@ -15,12 +15,12 @@ import se.nrm.bio.mediaserver.domain.Media;
 import org.apache.log4j.Logger;
 
 /**
- * 
+ *
  * @author ingimar
  */
 @Path("/")
 public class MediaResource {
-    
+
     private final static Logger logger = Logger.getLogger(MediaResource.class);
 
     @EJB
@@ -29,8 +29,9 @@ public class MediaResource {
     /**
      * http://localhost:8080/wildfly-ejb-in-ear/media/meta/00036f71-465c-4443-88e3-370f71fe1d84
      * http://localhost:8080/wildfly-ejb-in-ear/rest/meta/00036f71-465c-4443-88e3-370f71fe1d84
+     *
      * @param mediaUUID
-     * @return 
+     * @return
      */
     @GET
     @Path("/meta/{uuid}")
@@ -39,7 +40,7 @@ public class MediaResource {
         Media media = (Media) service.get(mediaUUID);
         return media;
     }
-    
+
     @GET
     @Path("/search/{tags}")
     @Produces({MediaType.APPLICATION_JSON})
@@ -47,28 +48,30 @@ public class MediaResource {
         List<Media> medLiaList = service.getMetadataByTags_MEDIA(tags);
         return medLiaList;
     }
-//
-//    @GET
-//    @Path("/all/{mediaType}")
-//    public List<Media> getMediaType(@PathParam("mediaType") String mediaType) {
-//        int limit = 10;
-//        return this.getMediaTypeWithLimit(mediaType, limit);
-//    }
 
-//    @GET
-//    @Path("/all/{mediaType}/limit/{limit}")
-//    public List<Media> getMediaTypeWithLimit(@PathParam("mediaType") String mediaType, @PathParam("limit") int limit) {
-//        List<Media> mediaList = new ArrayList<>();
-//        if (limit < 0 || limit > 100) {
-//            limit = 10;
-//        }
-//        String jpql = mediaType.concat(".findAll");
-//        try {
-//            mediaList = service.getXImages(jpql, limit);
-//        } catch (Exception ex) {
-//            logger.info(ex);
-//            return Collections.EMPTY_LIST;
-//        }
-//        return mediaList;
-//    }
+    @GET
+    @Path("/all/{mediaType}")
+    @Produces({MediaType.APPLICATION_JSON})
+    public List<Media> getMediaType(@PathParam("mediaType") String mediaType) {
+        int limit = 10;
+        return this.getMediaTypeWithLimit(mediaType, limit);
+    }
+
+    @GET
+    @Path("/all/{mediaType}/limit/{limit}")
+    @Produces({MediaType.APPLICATION_JSON})
+    public List<Media> getMediaTypeWithLimit(@PathParam("mediaType") String mediaType, @PathParam("limit") int limit) {
+        List<Media> mediaList = new ArrayList<>();
+        if (limit < 0 || limit > 100) {
+            limit = 10;
+        }
+        String jpql = mediaType.concat(".findAll");
+        try {
+            mediaList = service.getXImages(jpql, limit);
+        } catch (Exception ex) {
+            logger.info(ex);
+            return Collections.EMPTY_LIST;
+        }
+        return mediaList;
+    }
 }

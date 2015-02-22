@@ -6,11 +6,14 @@
 package se.nrm.bio.mediaserver.rs.demo;
 
 import java.io.IOException;
+import java.util.concurrent.ConcurrentHashMap;
+import javax.ejb.EJB;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import se.nrm.bio.mediaserver.business.StartupBean;
 
 /**
  *
@@ -19,6 +22,10 @@ import javax.servlet.http.HttpServletResponse;
 @WebServlet(urlPatterns = {"/DemoSearchTags"})
 public class DemoSearchTags extends HttpServlet {
 
+     @EJB
+    private StartupBean envBean;
+
+    ConcurrentHashMap envMap = null;
     /**
      * @Path("/search/{tags}")
      *
@@ -33,7 +40,10 @@ public class DemoSearchTags extends HttpServlet {
 
         String tags = (String) request.getParameter("tags");
 
-        String url = "/wildfly-ejb-in-ear/rest/search/".concat(tags);
+        envMap = envBean.getEnvironment();
+        String basePath = (String) envMap.get("base_url");
+        
+        String url = basePath.concat("rest/search/").concat(tags);
         response.sendRedirect(url);
 
     }
