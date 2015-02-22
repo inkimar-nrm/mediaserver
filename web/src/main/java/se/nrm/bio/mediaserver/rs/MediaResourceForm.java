@@ -101,8 +101,8 @@ public class MediaResourceForm {
             case "image/gif": {
                 boolean exportImage = form.isExport();
                 String exifJSON = NOT_APPLICABLE;
-                String basePath = (String)envMap.get("is_exif");
-                if (Boolean.parseBoolean(basePath)) {
+                String isExif = (String)envMap.get("is_exif");
+                if (Boolean.parseBoolean(isExif)) {
                     try {
                         exifJSON = extractExif(uploadedFileLocation, exifJSON);
                     } catch (ImageProcessingException ex) {
