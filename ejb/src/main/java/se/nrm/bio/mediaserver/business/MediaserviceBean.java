@@ -1,6 +1,7 @@
 package se.nrm.bio.mediaserver.business;
 
 import java.io.Serializable;
+import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -8,6 +9,8 @@ import javax.persistence.Query;
 import se.nrm.bio.mediaserver.domain.Lic;
 import se.nrm.bio.mediaserver.domain.Media;
 import org.apache.log4j.Logger;
+import se.nrm.bio.mediaserver.domain.Image;
+import se.nrm.bio.mediaserver.util.TagHelper;
 
 /**
  *
@@ -54,10 +57,19 @@ public class MediaserviceBean<T> implements Serializable {
         try {
             licence = (T) namedQuery.getSingleResult();
         } catch (Exception ex) {
-            logger.info("no license linked to '"+abbrevation+"' : \n"+ex);
+            logger.info("no license linked to '" + abbrevation + "' : \n" + ex);
             return null;
         }
         return licence;
+    }
+
+    public List<Image> getMetadataByTags_MEDIA(String tags) {
+        TagHelper tagHelper = new TagHelper();
+        String parsedTags = tagHelper.sqlUsageParseWithLike(tags);
+        String sql = "SELECT m from Media m where " + parsedTags;
+        Query query = em.createQuery(sql);
+        List<Image> images = query.getResultList();
+        return images;
     }
 
     public T getVechicle(String uuid) {

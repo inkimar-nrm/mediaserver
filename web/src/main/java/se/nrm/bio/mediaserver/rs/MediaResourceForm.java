@@ -32,7 +32,7 @@ import se.nrm.mediaserver.resteasy.util.FileUploadForm;
 import se.nrm.mediaserver.resteasy.util.MediaFactory;
 import se.nrm.mediaserver.resteasy.util.MediaURL;
 import se.nrm.mediaserver.resteasy.util.PathHelper;
-import se.nrm.mediaserver.resteasy.util.TagHelper;
+import se.nrm.bio.mediaserver.util.TagHelper;
 import se.nrm.mediaserver.resteasy.util.Writeable;
 
 

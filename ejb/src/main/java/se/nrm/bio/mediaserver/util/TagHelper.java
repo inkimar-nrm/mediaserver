@@ -1,4 +1,4 @@
-package se.nrm.mediaserver.resteasy.util;
+package se.nrm.bio.mediaserver.util;
 
 import java.util.Arrays;
 import java.util.Collections;

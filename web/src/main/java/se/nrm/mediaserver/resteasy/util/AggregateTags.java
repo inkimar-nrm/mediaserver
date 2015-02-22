@@ -1,5 +1,7 @@
 package se.nrm.mediaserver.resteasy.util;
 
+import se.nrm.bio.mediaserver.util.TagHelper;
+
 
 /**
  *
