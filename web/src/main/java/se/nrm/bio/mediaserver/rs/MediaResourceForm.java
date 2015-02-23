@@ -13,20 +13,31 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import javax.ejb.EJB;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.xml.bind.DatatypeConverter;
 import org.apache.log4j.Logger;
 import org.apache.tika.Tika;
 import org.jboss.resteasy.annotations.providers.multipart.MultipartForm;
 import org.json.simple.JSONObject;
 import se.nrm.bio.mediaserver.business.MediaserviceBean;
 import se.nrm.bio.mediaserver.business.StartupBean;
+import se.nrm.bio.mediaserver.domain.Attachment;
+import se.nrm.bio.mediaserver.domain.Image;
 import se.nrm.bio.mediaserver.domain.Lic;
+import se.nrm.bio.mediaserver.domain.Link;
 import se.nrm.bio.mediaserver.domain.Media;
 import se.nrm.bio.mediaserver.domain.MediaText;
+import se.nrm.bio.mediaserver.domain.Stream;
+import se.nrm.bio.mediaserver.rs.coupling.DeterminationResourceFetch;
+import se.nrm.bio.mediaserver.util.AdminProperties;
 import se.nrm.mediaserver.resteasy.util.AggregateTags;
 import se.nrm.mediaserver.resteasy.util.CheckSumFactory;
 import se.nrm.mediaserver.resteasy.util.ExifExtraction;
@@ -36,25 +47,27 @@ import se.nrm.mediaserver.resteasy.util.MediaFactory;
 import se.nrm.mediaserver.resteasy.util.MediaURL;
 import se.nrm.mediaserver.resteasy.util.PathHelper;
 import se.nrm.bio.mediaserver.util.TagHelper;
+import se.nrm.mediaserver.resteasy.util.FileUploadJSON;
+import se.nrm.mediaserver.resteasy.util.LinkUploadForm;
+import se.nrm.mediaserver.resteasy.util.SingleLinkUploadForm;
 import se.nrm.mediaserver.resteasy.util.Writeable;
 
-
 /**
- * 
+ *
  * @author ingimar
  */
 @Path("/")
 public class MediaResourceForm {
-    
+
     private final static Logger logger = Logger.getLogger(MediaResourceForm.class);
-    
+
     @EJB
     private MediaserviceBean bean;
-    
-    @EJB 
+
+    @EJB
     private StartupBean envBean;
+
     ConcurrentHashMap envMap = null;
-    
 
     private int dynamic_status = Response.Status.OK.getStatusCode();
 
@@ -64,13 +77,14 @@ public class MediaResourceForm {
 
     public MediaResourceForm() {
     }
-    
+
     @POST
     @Path("upload-file")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.TEXT_PLAIN)
     public Response createNewFile(@MultipartForm FileUploadForm form) throws IOException {
         envMap = envBean.getEnvironment();
+       
         String mimeType = "unknown", hashChecksum = "unknown";
         final String NOT_APPLICABLE = "N/A";
 
@@ -104,7 +118,7 @@ public class MediaResourceForm {
             case "image/gif": {
                 boolean exportImage = form.isExport();
                 String exifJSON = NOT_APPLICABLE;
-                String isExif = (String)envMap.get("is_exif");
+                String isExif = (String) envMap.get("is_exif");
                 if (Boolean.parseBoolean(isExif)) {
                     try {
                         exifJSON = extractExif(uploadedFileLocation, exifJSON);
@@ -144,8 +158,8 @@ public class MediaResourceForm {
 
         hashChecksum = CheckSumFactory.createMD5ChecksumFromBytestream(fileData);
 
-        MediaURL url = new MediaURL();
-        String pathToMedia = (String)envMap.get("relative_stream_url");
+        String rootContext = (String) envMap.get("base_url");
+        String pathToMedia = (String) envMap.get("relative_stream_url");
 
         media.setUuid(fileUUID);
         media.setOwner(form.getOwner());
@@ -153,7 +167,8 @@ public class MediaResourceForm {
         media.setMimetype(mimeType);
         media.setVisibility(form.getAccess());
         media.setHash(hashChecksum);
-        media.setMediaURL(pathToMedia.concat(fileUUID));
+        String mediaURL = rootContext.concat(pathToMedia).concat(fileUUID);
+        media.setMediaURL(mediaURL);
 
         AggregateTags aggr = new AggregateTags();
 
@@ -192,7 +207,7 @@ public class MediaResourceForm {
 
         return build;
     }
-    
+
     private String extractExif(String location, String exifJSON) throws ImageProcessingException, IOException {
         Metadata metadata = ImageMetadataReader.readMetadata(new File(location));
         JSONObject jsonObject = packageEXIF_IN_JSON(metadata, true);
@@ -213,8 +228,8 @@ public class MediaResourceForm {
      */
     protected Media updateMediatext(final MediaText updatedMediaText, final Media media) {
         final String locale = updatedMediaText.getLang();
-        
-         // ie:temp
+
+        // ie:temp
         final Set<MediaText> mediatextList = media.getTexts();
 
         String comment = "";
@@ -240,7 +255,355 @@ public class MediaResourceForm {
         }
 
         return media;
-//        return null;
+    }
+
+    @PUT
+    @Path("/upload-file")
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
+    @Produces(MediaType.TEXT_PLAIN)
+    public Response updateFile(@MultipartForm FileUploadForm form) {
+        String mediaUUID = form.getMediaUUID();
+        Media media = (Media) bean.get(mediaUUID);
+
+        String alt = form.getAlt(), access = form.getAccess(), fileName = form.getFileName();
+        String legend = form.getLegend(), owner = form.getOwner(), tags = form.getTags();
+        String comment = form.getComment();
+        String displayOrder = form.getDisplayOrder();
+
+        final String licenceType = form.licenceType();
+
+        if (alt != null && !alt.equals("")) {
+            media.setAlt(alt);
+        }
+
+        if (access != null && !access.equals("")) {
+            media.setVisibility(access);
+        }
+
+        if (fileName != null && !fileName.equals("")) {
+            media.setFilename(fileName);
+        }
+
+        if (legend != null && !legend.equals("")) {
+            String language = form.getLanguage();
+            MediaText mediatext = new MediaText(legend, language, media, comment);
+            // kan förenklas . iner:2014-08-26
+            updateMediatext(mediatext, media);
+        }
+
+        if (licenceType != null && !licenceType.equals("")) {
+            updateLicense(licenceType, media);
+        }
+
+        if (owner != null && !owner.equals("")) {
+            media.setOwner(owner);
+        }
+
+        if (tags != null && !tags.equals("")) {
+            media.setTaggar(tags);
+        }
+
+        if (media instanceof Image) {
+            Boolean export = form.isExport();
+            if (export != null) {
+                Image image = (Image) media;
+                image.setIsExported(export);
+                media = image;
+            }
+
+        } else if (media instanceof Stream) {
+            String startTime = form.getStartTime(), endTime = form.getEndTime();
+            Stream stream = (Stream) media;
+            if (startTime != null && !startTime.equals("")) {
+                stream.setStartTime(Integer.parseInt(startTime));
+            }
+            if (endTime != null && !endTime.equals("")) {
+                stream.setStartTime(Integer.parseInt(endTime));
+            }
+            media = stream;
+
+        } else if (media instanceof Attachment) {
+
+        }
+
+        writeToDatabase(media);
+
+        int sortOrder = Integer.parseInt(displayOrder);
+        String taxonUUID = media.getFirstDetermination().getTagValue();
+
+        DeterminationResourceFetch up = new DeterminationResourceFetch();
+        up.changeSortOrder(taxonUUID, mediaUUID, sortOrder);
+
+        return null;
+    }
+
+    /**
+     * ajax cannot call the @DELETE-directly.
+     *
+     * @param mediaUUID
+     */
+    @GET
+    @Path("/ajax/delete/all/{mediaUUID}")
+    public void ajaxDelete(@PathParam("mediaUUID") String mediaUUID) {
+        boolean deleted = this.deleteAll(mediaUUID);
+    }
+
+    @DELETE
+    @Path("/delete/all/{mediaUUID}")
+    @Consumes(MediaType.TEXT_PLAIN)
+    public boolean deleteAll(@PathParam("mediaUUID") String mediaUUID) {
+        boolean successfulDeletion = false;
+        try {
+            successfulDeletion = this.deleteMediaMetadata(mediaUUID);
+        } catch (Exception e) {
+            logger.debug("unsuccessful deletion of [".concat(mediaUUID).concat("]"));
+        }
+
+        if (successfulDeletion) {
+            successfulDeletion = this.deleteFileFromFS(mediaUUID);
+        }
+
+        return successfulDeletion;
+    }
+
+    @DELETE
+    @Path("/delete/media/filesystem/{mediaUUID}")
+    @Consumes(MediaType.TEXT_PLAIN)
+    public boolean deleteFileFromFS(@PathParam("mediaUUID") String mediaUUID) {
+//        String basePath = (String) envMap.get("is_exif");
+//        String filePath = PathHelper.getDynamicPathToFile(mediaUUID, "/opt/data/mediaserver/newmedia/");
+        String fileName = this.getAbsolutePathToFile(mediaUUID);
+//        String fileName = filePath.concat(mediaUUID);
+        File file = new File(fileName);
+        boolean isFileDeleted = file.delete();
+        return isFileDeleted;
+    }
+
+    @DELETE
+    @Path("/delete/media/metadata/{mediaUUID}")
+    @Consumes(MediaType.TEXT_PLAIN)
+    public boolean deleteMediaMetadata(@PathParam("mediaUUID") String mediaUUID) {
+        boolean deleted;
+        deleted = bean.deleteMediaMetadata(mediaUUID);
+        return deleted;
+    }
+
+    /**
+     * Sortorder-updated.
+     *
+     * @param form
+     * @return
+     */
+    @POST
+    @Path("/upload-coupling")
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    public Response createNewCoupling(@MultipartForm SingleLinkUploadForm form) {
+        Integer sortOrder = null;
+        String taxonUUID = form.getTaxonUUID();
+        String mediaUUID = form.getMediaUUID();
+        if (null == form.getSortOrder()) {
+            sortOrder = 999;
+        } else {
+            sortOrder = Integer.parseInt(form.getSortOrder());
+        }
+
+        Link link = Link.newInstanceWithSortOrder(form.getTypeOfSystem(), taxonUUID, form.getNameOfSystem(),
+                form.getSystemURL(), mediaUUID, sortOrder);
+        Response resp = createNewCoupling(link);
+
+        DeterminationResourceFetch up = new DeterminationResourceFetch();
+        up.changeSortOrder(taxonUUID, mediaUUID, sortOrder);
+
+        int st = resp.getStatus();
+        return Response.status(st).build();
+    }
+
+    @POST
+    @Path("/upload-batch-coupling")
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces(MediaType.TEXT_PLAIN)
+    public Response coupling(@MultipartForm LinkUploadForm form) {
+        return this.createNewCouplingParams(form);
+    }
+
+    /**
+     * Skyttner used this when importing media from NF to here: curl -i -X POST
+     * -H 'Content-Type: application/json' -d
+     * '{"typeOfSystem":"NF_TAXON","taxonUUID":"taxon-nr","nameOfSystem":"NF_SYSTEM","systemURL":"NF_URL","mediaList":["e4a3cf7d-add4-4949-a6ce-0f5594e61970","ebb45da5-bd25-45af-8a04-3470d38523d1"]}'
+     * http://172.16.23.62:8080/MediaServerResteasy/media/postJSONWithLIsta
+     *
+     * Should be an atomic transaction, either it succeeds or it fails. better
+     * return-message : 200 would suffice
+     *
+     * sortOrder : Defaults settings with counter, starting from 1.
+     *
+     * @param form
+     * @return
+     */
+    @POST
+    @Path("/postJSONWithLIsta")
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces(MediaType.TEXT_PLAIN)
+    public Response createNewCouplingParams(@MultipartForm LinkUploadForm form) {
+        String taxonUUID = form.getTaxonUUID();
+        Link link = new Link(form.getTypeOfSystem(), taxonUUID, form.getNameOfSystem(), form.getSystemURL());
+
+        String[] mediaList = form.getMediaList();
+
+        int counter = 1;
+        for (String mediaUUID : mediaList) {
+            link.setSortOrder(counter);
+            link.setMediaUUID(mediaUUID);
+            Response resp = createNewCoupling(link);
+            dynamic_status = resp.getStatus();
+            counter++;
+        }
+
+        return Response.status(dynamic_status).build();
+    }
+
+    @POST
+    @Path("/post")
+    public Response createNewCoupling(Link link) {
+        if (link == null) {
+            return Response.status(STATUS_CONFLICT).build();
+        }
+
+        try {
+            bean.save(link);
+        } catch (Exception ex) {
+            logger.info("" + ex);
+            return Response.status(STATUS_CONFLICT).build();
+        }
+
+        return Response.status(dynamic_status).entity(link).build();
+    }
+
+    /**
+     * 2014-10-23 : temporary fix. Created for migration of NRM-data, problem
+     * with UTF-8
+     *
+     * @param form
+     * @return
+     * @throws java.io.IOException
+     */
+    @POST
+    @Path("/upload-file/base64")
+    @Consumes("application/json")
+//    @Interceptors(ContentTypeSetterPreProcessorInterceptor.class)
+    public Response createNewMediaFile_JSON(FileUploadJSON form) throws IOException {
+
+        String mimeType = "unknown", hashChecksum = "unknown";
+
+        final byte[] fileData = DatatypeConverter.parseBase64Binary(form.getFileDataBase64());
+        if (null == fileData || fileData.length == 0) {
+            String msg = "attribute 'fileData' is null or empty \n";
+            logger.info(msg);
+            return Response.status(STATUS_INTERNAL_SERVER_ERROR).entity(msg).build();
+        }
+
+        String fileUUID = generateRandomUUID();
+        String uploadedFileLocation = getAbsolutePathToFile(fileUUID);
+        writeBase64ToFile(fileData, uploadedFileLocation);
+
+        Tika tika = new Tika();
+        mimeType = tika.detect(fileData);
+
+        Media media = null;
+        switch (mimeType) {
+            case "image/tiff":
+                logger.info("mediatype - image/tiff");
+            case "image/png":
+            case "image/jpeg":
+            case "image/gif": {
+                boolean exportImage = form.getExport();
+                String exifJSON = "N/A";
+                String isExif = (String) envMap.get("is_exif");
+                if (Boolean.parseBoolean(isExif)) {
+                    try {
+                        exifJSON = extractExif(uploadedFileLocation, exifJSON);
+                    } catch (ImageProcessingException ex) {
+                        logger.info(ex);
+                    }
+                }
+                media = MediaFactory.createImage2(exportImage, exifJSON);
+                break;
+//                boolean exportImage = form.getExport();
+//                media = MediaFactory.createImage(exportImage);
+//                break;
+            }
+            case "video/quicktime":
+            case "video/mp4": {
+                String startTime = form.getStartTime(), endTime = form.getEndTime();
+                media = MediaFactory.createVideo(checkStartEndTime(startTime), checkStartEndTime(endTime));
+                break;
+            }
+            case "audio/mpeg":
+            case "audio/vorbis":
+            case "audio/ogg": {
+                String startTime = form.getStartTime(), endTime = form.getEndTime();
+                media = MediaFactory.createSound(checkStartEndTime(startTime), checkStartEndTime(endTime));
+                break;
+            }
+            case "application/pdf": {
+                media = MediaFactory.createAttachement();
+                break;
+            }
+        }
+
+        if (null == media) {
+            String msg = String.format("Mimetype [ %s ] is not supported \n", mimeType);
+            logger.info("media is null:  ");
+            return Response.status(STATUS_INTERNAL_SERVER_ERROR).entity(msg).build();
+        }
+
+        hashChecksum = CheckSumFactory.createMD5ChecksumFromBytestream(fileData);
+
+        String pathToMedia = (String) envMap.get("relative_stream_url");
+
+        media.setUuid(fileUUID);
+        media.setOwner(form.getOwner());
+        media.setFilename(form.getFileName());
+        media.setMimetype(mimeType);
+        media.setVisibility(form.getAccess());
+        media.setHash(hashChecksum);
+        media.setMediaURL(pathToMedia.concat(fileUUID));
+
+        if (form.getTags() != null) {
+            String tags = form.getTags();
+            if (!tags.equals("")) {
+                addingTags(media, tags);
+            }
+        }
+
+        if (form.getLegend() == null || form.getLegend().equals("")) {
+            form.setLegend("N/A");
+        }
+
+        if (form.getLegend() != null && !form.getLegend().equals("")) {
+            MediaText mediaText;
+            String comment = form.getComment();
+            if (comment != null) {
+                mediaText = new MediaText(form.getLegend(), form.getLanguage(), media, comment);
+            } else {
+                mediaText = new MediaText(form.getLegend(), form.getLanguage(), media);
+            }
+            media.addMediaText(mediaText);
+        }
+
+        final String licenceType = form.getLicenseType();
+        if (licenceType != null) {
+            Lic license = fetchFromDB(licenceType);
+            media.getLics().add(license);
+        }
+
+        writeToDatabase(media);
+        String responseOutput = fileUUID;
+
+        Response build = Response.status(dynamic_status).header("mediaUUID", responseOutput).entity(responseOutput).build();
+
+        return build;
     }
 
     /**
@@ -283,7 +646,8 @@ public class MediaResourceForm {
     }
 
     private String getAbsolutePathToFile(String uuid) {
-        String basePath = (String)envMap.get("path_to_files");
+         envMap = envBean.getEnvironment();
+        String basePath = (String) envMap.get("path_to_files");
         return PathHelper.getEmptyOrAbsolutePathToFile(uuid, basePath);
     }
 
@@ -304,7 +668,7 @@ public class MediaResourceForm {
     private Lic fetchFromDB(String abbrevation) {
         String trimmedAbbrevation = abbrevation.trim();
         Lic license = (Lic) bean.getLicenseByAbbr(trimmedAbbrevation);
-        
+
         return license;
     }
 

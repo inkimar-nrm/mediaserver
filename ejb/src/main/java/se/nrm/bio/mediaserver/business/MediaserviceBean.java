@@ -10,6 +10,7 @@ import se.nrm.bio.mediaserver.domain.Lic;
 import se.nrm.bio.mediaserver.domain.Media;
 import org.apache.log4j.Logger;
 import se.nrm.bio.mediaserver.domain.Image;
+import se.nrm.bio.mediaserver.domain.MediaText;
 import se.nrm.bio.mediaserver.util.TagHelper;
 
 /**
@@ -50,6 +51,48 @@ public class MediaserviceBean<T> implements Serializable {
         return media;
     }
 
+    public void delete(MediaText iText) {
+        MediaText text = em.find(MediaText.class, iText.getUuid());
+        em.remove(text);
+    }
+
+    /**
+     * obs: Removes the media from 'DETERMINATION'-table as well. ?
+     *
+     * @param mediaUUID
+     * @return
+     */
+    public boolean deleteMediaMetadata(final String mediaUUID) {
+        boolean deleted = false;
+        T fetchedEntity;
+        try {
+            fetchedEntity = get(mediaUUID);
+        } catch (Exception e) {
+            return deleted;
+        }
+
+        try {
+            em.remove(fetchedEntity);
+        } catch (Exception e) {
+            return deleted;
+        }
+        deleted = true;
+
+        return deleted;
+    }
+
+    public boolean isMediaUUIDCoupled(final String mediaUUID) {
+        boolean isCoupled = false;
+        Query q = em.createNativeQuery("select TAG_VALUE from DETERMINATION where MEDIA_UUID='" + mediaUUID + "'");
+        try {
+            String taxonUUID = (String) q.getSingleResult();
+            isCoupled = true;
+        } catch (Exception ex) {
+        }
+
+        return isCoupled;
+    }
+
     public T getLicenseByAbbr(String abbrevation) {
         Query namedQuery = em.createNamedQuery(Lic.FIND_BY_ABBREV);
         namedQuery.setParameter("abbrev", abbrevation);
@@ -71,7 +114,7 @@ public class MediaserviceBean<T> implements Serializable {
         List<Image> images = query.getResultList();
         return images;
     }
-    
+
     public List<Image> getAll() {
         Query query = em.createNamedQuery(Media.FIND_ALL);
         List<Image> images = query.getResultList();
@@ -84,10 +127,6 @@ public class MediaserviceBean<T> implements Serializable {
         List<Media> images = query.setMaxResults(limit).getResultList();
         return images;
     }
-    
-    
-    
-    
 
     public T getVechicle(String uuid) {
         Query namedQuery = em.createNamedQuery("Vehicle.findByUuid");

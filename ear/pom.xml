@@ -45,11 +45,11 @@
                   
                     <defaultLibBundleDir>lib</defaultLibBundleDir>
                     <modules>
-                    
                         <webModule>
                             <groupId>org.wildfly.quickstarts</groupId>
                             <artifactId>wildfly-ejb-in-ear-web</artifactId>
-                            <contextRoot>/wildfly-ejb-in-ear</contextRoot>
+                            <!--<contextRoot>/wildfly-ejb-in-ear</contextRoot>-->
+                            <contextRoot>/MediaServerResteasy</contextRoot>
                         </webModule>
                     </modules>
                     <fileNameMapping>no-version</fileNameMapping>
