@@ -1,16 +1,15 @@
 package se.nrm.bio.mediaserver.rs.coupling;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import javax.ejb.EJB;
-import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import se.nrm.bio.mediaserver.business.MediaCouplingBean;
-import se.nrm.bio.mediaserver.business.MediaserviceBean;
 import se.nrm.bio.mediaserver.domain.Determination;
 import se.nrm.bio.mediaserver.domain.Media;
 
@@ -18,8 +17,8 @@ import se.nrm.bio.mediaserver.domain.Media;
  *
  * @author ingimar
  */
-@Path("")
-@Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+@Path("link")
+//@Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
 @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
 public class DeterminationResourceFetch {
 
@@ -32,14 +31,25 @@ public class DeterminationResourceFetch {
      * @return List of Media-metadata
      */
     @GET
-    @Path("/determination/metadata/{extuuid}")
+    @Path("/meta/{extuuid}")
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public List<Media> getMediaMetadata(@PathParam("extuuid") String extUUID) {
         List<Media> mediaList = bean.getMetaDataForMedia(extUUID);
+
         return mediaList;
     }
 
     @GET
-    @Path("/determination/metadata/{extuuid}/{lang}")
+    @Path("/time")
+    @Produces({MediaType.APPLICATION_JSON})
+    public String getDate() {
+        Date date = new Date();
+        return "tiden = " + date.toString();
+    }
+
+    @GET
+    @Path("/meta/{extuuid}/{lang}")
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public List<Media> getMediaMetadataByLang(@PathParam("extuuid") String extUUID,
             @PathParam("lang") String locale) {
         List<Media> mediaList = bean.getMetadataByLanguage(extUUID, locale);
@@ -47,7 +57,8 @@ public class DeterminationResourceFetch {
     }
 
     @GET
-    @Path("/determination/metadata/{extuuid}/{lang}/{tags}")
+    @Path("/meta/{extuuid}/{lang}/{tags}")
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public List<Media> getMediaMetadataByLangAndTags(@PathParam("extuuid") String extUUID,
             @PathParam("lang") String lang, @PathParam("tags") String tags) {
         List<Media> medLiaList = bean.getMetadataByLanguageAndTags(extUUID, lang, tags);
@@ -60,14 +71,16 @@ public class DeterminationResourceFetch {
      * @return
      */
     @GET
-    @Path("/determination/present/{extuuid}")
+    @Path("/present/{extuuid}")
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public String isTagPresent(@PathParam("extuuid") String extUUID) {
         Boolean hasTagvalue = bean.isTagPresentInDetermination(extUUID);
         return hasTagvalue.toString();
     }
 
     @GET
-    @Path("/determination/sorting/{extuuid}/media/{mediauuid}/sortorder/{inSortorder}")
+    @Path("/sorting/{extuuid}/media/{mediauuid}/sortorder/{inSortorder}")
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public List<Determination> changeSortOrder(@PathParam("extuuid") String extuuid,
             @PathParam("mediauuid") String mediauuid,
             @PathParam("inSortorder") int inSortorder) {

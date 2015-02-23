@@ -59,10 +59,10 @@ public class MediaCouplingBean<T> implements Serializable {
         return mediaList;
     }
 
-    // 2015-02 beror på Mediatext, avvakta
+    // 2015-02-23 beror på Mediatext, avvakta
     public List<Image> getMetadataByLanguage(String externalUUID, String language) {
         String sql;
-        sql = "SELECT DISTINCT d.media FROM Determination d, Media m, MEDIA_TEXT t"
+        sql = "SELECT DISTINCT d.media FROM Determination d, Media m, MediaText t"
                 + " WHERE d.media.uuid = m.uuid AND m.uuid=t.media.uuid"
                 + " AND d.tagValue= '" + externalUUID + "'"
                 + " AND t.lang= '" + language + "' ORDER BY d.sortOrder";

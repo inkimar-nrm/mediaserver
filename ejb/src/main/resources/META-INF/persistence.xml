@@ -11,6 +11,7 @@
     
     <class>se.nrm.bio.mediaserver.domain.MediaLicence</class>
     <class>se.nrm.bio.mediaserver.domain.MediaText</class>
+    
     <class>se.nrm.bio.mediaserver.domain.MetaData</class>
     <class>se.nrm.bio.mediaserver.domain.Tag</class>
     <class>se.nrm.bio.mediaserver.domain.Determination</class>
