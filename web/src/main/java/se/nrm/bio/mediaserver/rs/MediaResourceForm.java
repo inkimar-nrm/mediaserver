@@ -5,7 +5,10 @@ import com.drew.imaging.ImageProcessingException;
 import com.drew.metadata.Metadata;
 import java.io.File;
 import java.io.IOException;
+import java.util.ConcurrentModificationException;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import javax.ejb.EJB;
@@ -37,7 +40,7 @@ import se.nrm.mediaserver.resteasy.util.Writeable;
 
 
 /**
- * 19 feb, sök på  // ie:temp, tagit bort MediaText från Media-Ojbektet
+ * 
  * @author ingimar
  */
 @Path("/")
@@ -142,7 +145,6 @@ public class MediaResourceForm {
         hashChecksum = CheckSumFactory.createMD5ChecksumFromBytestream(fileData);
 
         MediaURL url = new MediaURL();
-//        String pathToMedia = url.getPathToStream();
         String pathToMedia = (String)envMap.get("relative_stream_url");
 
         media.setUuid(fileUUID);
@@ -174,7 +176,7 @@ public class MediaResourceForm {
                 mediaText = new MediaText(form.getLegend(), form.getLanguage(), media);
             }
             // ie:temp
-//            media.addMediaText(mediaText);
+            media.addMediaText(mediaText);
         }
 
         final String licenceType = form.licenceType();
@@ -210,35 +212,35 @@ public class MediaResourceForm {
      * @return
      */
     protected Media updateMediatext(final MediaText updatedMediaText, final Media media) {
-//        final String locale = updatedMediaText.getLang();
-//        
-//         // ie:temp
-//        final Set<MediaText> mediatextList = media.getTexts();
-//
-//        String comment = "";
-//        try {
-//            Iterator<MediaText> it = mediatextList.iterator();
-//            while (it.hasNext()) {
-//                MediaText mediaText = it.next();
-//                comment = mediaText.getComment().trim();
-//                if (mediaText.getLang().equals(locale)) {
-//                    bean.delete(mediaText);
-//                    it.remove();
-//                }
-//            }
-//            if (!comment.isEmpty()) {
-//                if (comment.equals(updatedMediaText.getComment().trim())) {
-//                    updatedMediaText.setComment(comment);
-//                }
-//            }
-//            media.addMediaText(updatedMediaText);
-//        } catch (ConcurrentModificationException ex) {
-//            logger.info(ex);
-//            throw new ConcurrentModificationException("probz with MEDIA_TEXT", ex);
-//        }
-//
-//        return media;
-        return null;
+        final String locale = updatedMediaText.getLang();
+        
+         // ie:temp
+        final Set<MediaText> mediatextList = media.getTexts();
+
+        String comment = "";
+        try {
+            Iterator<MediaText> it = mediatextList.iterator();
+            while (it.hasNext()) {
+                MediaText mediaText = it.next();
+                comment = mediaText.getComment().trim();
+                if (mediaText.getLang().equals(locale)) {
+                    bean.delete(mediaText);
+                    it.remove();
+                }
+            }
+            if (!comment.isEmpty()) {
+                if (comment.equals(updatedMediaText.getComment().trim())) {
+                    updatedMediaText.setComment(comment);
+                }
+            }
+            media.addMediaText(updatedMediaText);
+        } catch (ConcurrentModificationException ex) {
+            logger.info(ex);
+            throw new ConcurrentModificationException("probz with MEDIA_TEXT", ex);
+        }
+
+        return media;
+//        return null;
     }
 
     /**

@@ -30,12 +30,12 @@ public class MediaResourceApplication extends Application {
      * If required, comment out calling this method in getClasses().
      */
     private void addRestResourceClasses(Set<Class<?>> resources) {
+        resources.add(se.nrm.bio.mediaserver.rs.AdministrationResource.class);
         resources.add(se.nrm.bio.mediaserver.rs.MediaResource.class);
         resources.add(se.nrm.bio.mediaserver.rs.MediaResourceFetchBinary.class);
         resources.add(se.nrm.bio.mediaserver.rs.MediaResourceForm.class);
         resources.add(se.nrm.bio.mediaserver.rs.TestResource.class);
         resources.add(se.nrm.bio.mediaserver.rs.coupling.DeterminationPostForm.class);
         resources.add(se.nrm.bio.mediaserver.rs.coupling.DeterminationResourceFetch.class);
-        resources.add(se.nrm.bio.mediaserver.rs.info.Administration.class);
     }
 }

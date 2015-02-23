@@ -3,7 +3,6 @@ package se.nrm.bio.mediaserver.domain;
 import java.io.Serializable;
 import javax.persistence.Basic;
 import javax.persistence.Column;
-import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -11,6 +10,8 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Transient;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -20,7 +21,8 @@ import javax.xml.bind.annotation.XmlTransient;
  *
  * @author ingimar
  */
-@Entity(name = "MEDIA_TEXT")
+@Entity
+@Table(name = "MEDIA_TEXT")
 @XmlAccessorType(value = XmlAccessType.FIELD)
 @XmlRootElement
 public class MediaText implements Serializable {
@@ -62,21 +64,21 @@ public class MediaText implements Serializable {
     }
     public MediaText(String legend, String lang,String comment) {
         this.legend = legend;
-        this.comment = comment;
         this.setLang(lang);
+        this.comment = comment;
     }
 
     public MediaText(String legend, String lang, Media media) {
         this.legend = legend;
-        this.media = media;
         this.setLang(lang);
+        this.media = media;
     }
 
     public MediaText(String legend, String lang, Media media, String comment) {
         this.legend     = legend;
-        this.comment    = comment;
-        this.media      = media;
         this.setLang(lang);
+        this.media      = media;
+        this.comment    = comment;
     }
 
     public Integer getUuid() {

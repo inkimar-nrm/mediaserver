@@ -1,4 +1,4 @@
-package se.nrm.bio.mediaserver.rs.info;
+package se.nrm.bio.mediaserver.rs;
 
 import java.util.List;
 import javax.ejb.EJB;
@@ -19,7 +19,7 @@ import se.nrm.bio.mediaserver.domain.Lic;
 @Path("admin")
 @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
 @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-public class Administration {
+public class AdministrationResource {
 
     @EJB
     AdminBean bean;

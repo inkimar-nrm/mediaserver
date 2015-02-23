@@ -15,6 +15,7 @@ import javax.ejb.EJB;
 
 import javax.imageio.ImageIO;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
 import net.coobird.thumbnailator.Thumbnails;
 import org.apache.log4j.Logger;
 import org.apache.tika.Tika;
@@ -33,6 +34,7 @@ public class MediaResourceFetchBinary {
 
     @EJB
     private StartupBean envBean;
+
     private ConcurrentHashMap envMap = null;
 
     @GET
@@ -43,22 +45,6 @@ public class MediaResourceFetchBinary {
         File file = new File(filename);
         Response response = returnFile(file);
         return response;
-    }
-
-    private static Response returnFile(File file) {
-        if (!file.exists()) {
-            logger.info("File does not exist");
-            return Response.status(Response.Status.NOT_FOUND).build();
-        }
-
-        try {
-            String mimeType = getMimeType(file);
-            FileInputStream fileInputStream = new FileInputStream(file);
-            return Response.ok(fileInputStream, mimeType).build();
-        } catch (IOException ioEx) {
-            logger.info(ioEx);
-            return Response.status(Response.Status.NOT_FOUND).build();
-        }
     }
 
     @GET
@@ -75,6 +61,22 @@ public class MediaResourceFetchBinary {
         }
 
         return outputStream.toByteArray();
+    }
+
+    private static Response returnFile(File file) {
+        if (!file.exists()) {
+            logger.info("File does not exist");
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+
+        try {
+            String mimeType = getMimeType(file);
+            FileInputStream fileInputStream = new FileInputStream(file);
+            return Response.ok(fileInputStream, mimeType).build();
+        } catch (IOException ioEx) {
+            logger.info(ioEx);
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
     }
 
     /**
@@ -108,13 +110,14 @@ public class MediaResourceFetchBinary {
         String mimeType = tika.detect(file);
         return mimeType;
     }
+
     private String getDynamicPath(String uuid, String path) {
         return PathHelper.getEmptyOrAbsolutePathToFile(uuid, path);
     }
 
     private String getBasePath() {
-         envMap = envBean.getEnvironment();
-        String basePath = (String)envMap.get("path_to_files");
+        envMap = envBean.getEnvironment();
+        String basePath = (String) envMap.get("path_to_files");
         return basePath;
     }
 }

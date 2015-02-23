@@ -1,18 +1,12 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-package se.nrm.bio.mediaserver.domain;
+package se.nrm.bio.mediaserver.domain.dummy;
 
-import se.nrm.bio.mediaserver.domain.dummy.Vehicle;
-import se.nrm.bio.mediaserver.domain.dummy.Car;
 import java.util.UUID;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
 import javax.persistence.Query;
+import se.nrm.bio.mediaserver.domain.Media;
 
 /**
  *

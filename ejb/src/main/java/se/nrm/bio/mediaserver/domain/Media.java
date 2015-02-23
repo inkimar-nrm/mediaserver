@@ -36,7 +36,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 @Entity
 @Table(name = "MEDIA")
 @NamedQueries({
-//    @NamedQuery(name = "Media.FindByUuid", query = "SELECT c FROM Media c where c.uuid = :uuid"),
     @NamedQuery(name = Media.FIND_BY_UUID, query = "SELECT c FROM Media c where c.uuid = :uuid"),
     @NamedQuery(name = Media.FIND_ALL, query = "SELECT m FROM Media m")
 })
@@ -91,11 +90,11 @@ public abstract class Media implements Serializable {
     @XmlElement(name = "system", required = true)
     private Collection<Determination> determinations;
 
-//    @OneToMany(cascade = CascadeType.ALL, mappedBy = "media",
-//            targetEntity = MediaText.class, fetch = FetchType.EAGER)
-//    @XmlElementWrapper(name = "descriptions")
-//    @XmlElement(name = "description", required = true)
-//    private Set<MediaText> texts = new HashSet<>(0);
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "media",
+            targetEntity = MediaText.class, fetch = FetchType.EAGER)
+    @XmlElementWrapper(name = "descriptions")
+    @XmlElement(name = "description", required = true)
+    private Set<MediaText> texts; //= new HashSet<>(0);
 
     @ManyToMany(fetch = FetchType.EAGER) // cascade = {CascadeType.ALL},
     @JoinTable(name = "MEDIA_X_LIC",
@@ -117,9 +116,11 @@ public abstract class Media implements Serializable {
 
     public Media() {
         lics = new HashSet<>();
+        texts = new HashSet<>(0);
     }
 
     public Media(String owner) {
+        this();
         this.owner = owner;
     }
 
@@ -132,6 +133,7 @@ public abstract class Media implements Serializable {
      * @param mimetype
      */
     public Media(String owner, String visibility, String filename, String mimetype) {
+        this();
         this.setOwner(owner);
         this.visibility = visibility;
         this.filename = filename;
@@ -189,17 +191,17 @@ public abstract class Media implements Serializable {
         this.mediaURL = mediaURL;
     }
 
-//    public Set<MediaText> getTexts() {
-//        return texts;
-//    }
-//
-//    public void setTexts(Set<MediaText> texts) {
-//        this.texts = texts;
-//    }
-//
-//    public void addMediaText(MediaText text) {
-//        this.texts.add(text);
-//    }
+    public Set<MediaText> getTexts() {
+        return texts;
+    }
+
+    public void setTexts(Set<MediaText> texts) {
+        this.texts = texts;
+    }
+
+    public void addMediaText(MediaText text) {
+        this.texts.add(text);
+    }
 
     public Collection<Tag> getTags() {
         if (tags != null) {

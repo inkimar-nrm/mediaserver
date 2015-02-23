@@ -9,14 +9,16 @@
     <class>se.nrm.bio.mediaserver.domain.Sound</class>
     <class>se.nrm.bio.mediaserver.domain.Attachment</class>
     
-    <class>se.nrm.bio.mediaserver.domain.AdminConfig</class>
-    <class>se.nrm.bio.mediaserver.domain.AdminMedia</class>
-    
+    <class>se.nrm.bio.mediaserver.domain.MediaLicence</class>
+    <class>se.nrm.bio.mediaserver.domain.MediaText</class>
+    <class>se.nrm.bio.mediaserver.domain.MetaData</class>
     <class>se.nrm.bio.mediaserver.domain.Tag</class>
     <class>se.nrm.bio.mediaserver.domain.Determination</class>
-    <class>se.nrm.bio.mediaserver.domain.Tag</class>
+    <class>se.nrm.bio.mediaserver.domain.Link</class>
+    <class>se.nrm.bio.mediaserver.domain.AdminConfig</class>
     <class>se.nrm.bio.mediaserver.domain.Lic</class>
     
+    <class>se.nrm.bio.mediaserver.domain.AdminMedia</class>
     
     <class>se.nrm.bio.mediaserver.domain.dummy.Dummy</class>
     <class>se.nrm.bio.mediaserver.domain.dummy.Car</class>
