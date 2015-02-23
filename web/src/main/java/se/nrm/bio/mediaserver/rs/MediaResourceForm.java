@@ -37,14 +37,12 @@ import se.nrm.bio.mediaserver.domain.Media;
 import se.nrm.bio.mediaserver.domain.MediaText;
 import se.nrm.bio.mediaserver.domain.Stream;
 import se.nrm.bio.mediaserver.rs.coupling.DeterminationResourceFetch;
-import se.nrm.bio.mediaserver.util.AdminProperties;
 import se.nrm.mediaserver.resteasy.util.AggregateTags;
 import se.nrm.mediaserver.resteasy.util.CheckSumFactory;
 import se.nrm.mediaserver.resteasy.util.ExifExtraction;
 import se.nrm.mediaserver.resteasy.util.FileSystemWriter;
 import se.nrm.mediaserver.resteasy.util.FileUploadForm;
 import se.nrm.mediaserver.resteasy.util.MediaFactory;
-import se.nrm.mediaserver.resteasy.util.MediaURL;
 import se.nrm.mediaserver.resteasy.util.PathHelper;
 import se.nrm.bio.mediaserver.util.TagHelper;
 import se.nrm.mediaserver.resteasy.util.FileUploadJSON;
@@ -84,7 +82,7 @@ public class MediaResourceForm {
     @Produces(MediaType.TEXT_PLAIN)
     public Response createNewFile(@MultipartForm FileUploadForm form) throws IOException {
         envMap = envBean.getEnvironment();
-       
+
         String mimeType = "unknown", hashChecksum = "unknown";
         final String NOT_APPLICABLE = "N/A";
 
@@ -190,7 +188,6 @@ public class MediaResourceForm {
             } else {
                 mediaText = new MediaText(form.getLegend(), form.getLanguage(), media);
             }
-            // ie:temp
             media.addMediaText(mediaText);
         }
 
@@ -370,10 +367,7 @@ public class MediaResourceForm {
     @Path("/delete/media/filesystem/{mediaUUID}")
     @Consumes(MediaType.TEXT_PLAIN)
     public boolean deleteFileFromFS(@PathParam("mediaUUID") String mediaUUID) {
-//        String basePath = (String) envMap.get("is_exif");
-//        String filePath = PathHelper.getDynamicPathToFile(mediaUUID, "/opt/data/mediaserver/newmedia/");
         String fileName = this.getAbsolutePathToFile(mediaUUID);
-//        String fileName = filePath.concat(mediaUUID);
         File file = new File(fileName);
         boolean isFileDeleted = file.delete();
         return isFileDeleted;
@@ -646,7 +640,7 @@ public class MediaResourceForm {
     }
 
     private String getAbsolutePathToFile(String uuid) {
-         envMap = envBean.getEnvironment();
+        envMap = envBean.getEnvironment();
         String basePath = (String) envMap.get("path_to_files");
         return PathHelper.getEmptyOrAbsolutePathToFile(uuid, basePath);
     }

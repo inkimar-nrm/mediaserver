@@ -15,7 +15,6 @@ import javax.ejb.EJB;
 
 import javax.imageio.ImageIO;
 import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
 import net.coobird.thumbnailator.Thumbnails;
 import org.apache.log4j.Logger;
 import org.apache.tika.Tika;

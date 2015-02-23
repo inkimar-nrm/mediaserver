@@ -69,6 +69,8 @@
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>jaxrs-api</artifactId>
+            <!--<version>3.0.2.Final</version>-->
+            <!--<type>jar</type>-->
             <scope>provided</scope>
         </dependency>
         
@@ -79,7 +81,7 @@
           <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-multipart-provider</artifactId>
-            <!--<version>3.0.8.Final</version>-->
+            <version>3.0.8.Final</version>
             <!--<type>jar</type>-->
             <scope>provided</scope>
         </dependency>
@@ -108,7 +110,7 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-            <!--<version>1.7.5</version>-->
+            <version>1.7.5</version>
             <type>jar</type>
         </dependency>
         
@@ -150,6 +152,7 @@
         <!-- Set the name of the war, used as the context root when the app
         is deployed -->
         <finalName>${project.artifactId}</finalName>
+        <!--<finalName>MediaServerResteasy</finalName>-->
         <plugins>
             <plugin>
                 <artifactId>maven-war-plugin</artifactId>
