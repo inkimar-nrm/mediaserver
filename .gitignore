@@ -18,3 +18,4 @@ pom.xml~
 /ejb/target/
 /web/target/
 
+/db/target/
