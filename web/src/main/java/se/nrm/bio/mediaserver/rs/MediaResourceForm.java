@@ -54,7 +54,7 @@ import se.nrm.mediaserver.resteasy.util.Writeable;
  *
  * @author ingimar
  */
-@Path("/")
+@Path("")
 public class MediaResourceForm {
 
     private final static Logger logger = Logger.getLogger(MediaResourceForm.class);
@@ -77,7 +77,7 @@ public class MediaResourceForm {
     }
 
     @POST
-    @Path("upload-file")
+    @Path("load")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.TEXT_PLAIN)
     public Response createNewFile(@MultipartForm FileUploadForm form) throws IOException {

@@ -6,9 +6,9 @@
     </head>
     <body>
         <h1>Image - JAX-RS File Upload Example [returns a UUID]</h1>
-        <input type="hidden" name="branch" id="branch" value="glassfish,development-liquibase-mysql">
-        <input type="hidden" name="version.date" id="version.date" value="latest: 2015-02-04-11:06, now: 2015-02-04-11:06">
-        <form action="rest/upload-file" method="post" enctype="multipart/form-data"  accept-charset="utf-8" >
+        <input type="hidden" name="branch" id="branch" value="development-liquibase-mysql">
+        <input type="hidden" name="version.date" id="version.date" value="latest: 2015-02-04-11:06, now: 2015-03-04-14:05">
+        <form action="media/load" method="post" enctype="multipart/form-data"  accept-charset="utf-8" >
             <p>
                 Owner : <input type="text" name="owner" /></br>
             </p>
