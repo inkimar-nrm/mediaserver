@@ -5,14 +5,13 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <artifactId>wildfly-ejb-in-ear</artifactId>
-        <groupId>org.wildfly.quickstarts</groupId>
+        <artifactId>nrm-mediaserver</artifactId>
+        <groupId>se.nrm.bio.mediaserver</groupId>
         <version>9.0.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>wildfly-ejb-in-ear-ejb</artifactId>
-    <name>WildFly Quickstarts: EJB and War in an Ear - EJB</name>
-    <description>WildFly Quickstarts: EJB and War in an Ear - EJB</description>
+    <artifactId>mediaserver-ejb</artifactId>
+    <name>Mediaserver-EJB</name>
    
     <dependencies>
 

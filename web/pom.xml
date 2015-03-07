@@ -5,15 +5,15 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <artifactId>wildfly-ejb-in-ear</artifactId>
-        <groupId>org.wildfly.quickstarts</groupId>
+        <artifactId>nrm-mediaserver</artifactId>
+        <groupId>se.nrm.bio.mediaserver</groupId>
         <version>9.0.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>wildfly-ejb-in-ear-web</artifactId>
+    <artifactId>mediaserver-web</artifactId>
     <packaging>war</packaging>
 
-    <name>WildFly Quickstarts: EJB and War in an Ear - WEB</name>
+    <name>Mediaserver-WEB</name>
     <description>WildFly Quickstarts: EJB and War in an Ear - WEB</description>
 
    
@@ -21,8 +21,8 @@
 
         <!-- Import the ejb project so that the JSF managed bean can use the EJB -->
         <dependency>
-            <groupId>org.wildfly.quickstarts</groupId>
-            <artifactId>wildfly-ejb-in-ear-ejb</artifactId>
+            <groupId>se.nrm.bio.mediaserver</groupId>
+            <artifactId>mediaserver-ejb</artifactId>
             <type>ejb</type>
             <scope>provided</scope>
         </dependency>

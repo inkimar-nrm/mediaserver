@@ -5,13 +5,13 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <artifactId>wildfly-ejb-in-ear</artifactId>
-        <groupId>org.wildfly.quickstarts</groupId>
+        <artifactId>nrm-mediaserver</artifactId>
+        <groupId>se.nrm.bio.mediaserver</groupId>
         <version>9.0.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>wildfly-ejb-in-ear-ear</artifactId>
-    <name>WildFly Quickstarts: EJB and War in an Ear - EAR</name>
+    <artifactId>mediaserver-ear</artifactId>
+    <name>Mediaserver-EAR</name>
     <packaging>ear</packaging>
 
    
@@ -19,13 +19,13 @@
     <dependencies>
         <!-- Dependencies on the ejb and web modules so that they can be found by the ear plugin -->
         <dependency>
-            <groupId>org.wildfly.quickstarts</groupId>
-            <artifactId>wildfly-ejb-in-ear-web</artifactId>
+            <groupId>se.nrm.bio.mediaserver</groupId>
+            <artifactId>mediaserver-web</artifactId>
             <type>war</type>
         </dependency>
         <dependency>
-            <groupId>org.wildfly.quickstarts</groupId>
-            <artifactId>wildfly-ejb-in-ear-ejb</artifactId>
+            <groupId>se.nrm.bio.mediaserver</groupId>
+            <artifactId>mediaserver-ejb</artifactId>
             <type>ejb</type>
         </dependency>
     </dependencies>
@@ -40,15 +40,13 @@
                 <version>${version.ear.plugin}</version>
                 <!-- configuring the ear plugin -->
                 <configuration>
-                    <!-- Tell Maven we are using Java EE 7 -->
                     <version>6</version>
                   
                     <defaultLibBundleDir>lib</defaultLibBundleDir>
                     <modules>
                         <webModule>
-                            <groupId>org.wildfly.quickstarts</groupId>
-                            <artifactId>wildfly-ejb-in-ear-web</artifactId>
-                            <!--<contextRoot>/wildfly-ejb-in-ear</contextRoot>-->
+                            <groupId>se.nrm.bio.mediaserver</groupId>
+                            <artifactId>mediaserver-web</artifactId>
                             <contextRoot>/MediaServerResteasy</contextRoot>
                         </webModule>
                     </modules>
