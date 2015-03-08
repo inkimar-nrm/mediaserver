@@ -34,7 +34,6 @@ public class MediaResourceApplication extends Application {
         resources.add(se.nrm.bio.mediaserver.rs.MediaResource.class);
         resources.add(se.nrm.bio.mediaserver.rs.MediaResourceFetchBinary.class);
         resources.add(se.nrm.bio.mediaserver.rs.MediaResourceForm.class);
-        resources.add(se.nrm.bio.mediaserver.rs.TestResource.class);
         resources.add(se.nrm.bio.mediaserver.rs.coupling.DeterminationPostForm.class);
         resources.add(se.nrm.bio.mediaserver.rs.coupling.DeterminationResourceFetch.class);
     }
